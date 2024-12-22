@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js'
 
+//initializing
 dotenv.config();
 const app = express();
 app.use(express.json())
@@ -22,5 +23,18 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
 })
 
-app.use('/api/user' , userRoutes)
+app.use('/api/user', userRoutes)
 app.use('/api/auth', authRoutes)
+
+//middleware for handling error
+app.use((err, req, res, next) => {
+    
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'internal server error';
+
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        statusCode
+    })
+})
