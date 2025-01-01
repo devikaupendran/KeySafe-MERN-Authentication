@@ -37,5 +37,46 @@ export const signin = async (req, res, next) => {
     catch (error) {
         next(error)
     }
+}
 
+export const google = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ email: req.body.email })
+
+        // Check if user exists in the database
+        if (user) {
+            // If user exists, create and send a JWT token
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            const { password: hashedPassword, ...rest } = user._doc;
+            const expiryDate = new Date(Date.now() + 3600000); //setting a expiry date for cookie
+            res.cookie('access_token', token, { httpOnly: true, expires: expiryDate }).status(200).json(rest);
+        } else {
+
+            // If user doesn't exist, create a new user
+            //generate random password
+            const generatePassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
+            const newUser = new User(
+                {
+                    username: req.body.name.split(" ").join("").toLowerCase() + Math.floor(Math.random() * 10000).toString(),
+                    email: req.body.email,
+                    password: hashedPassword,
+                    profilePicture: req.body.photo
+                }
+            )
+            await newUser.save();    // Save the new user to the database
+
+             // Generate a token for the new user
+            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET)
+            const { password: hashedPassword2, ...rest } = newUser._doc;
+            const expiryDate = new Date(Date.now() + 3600000)
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                expires: expiryDate,
+            }).status(200).json(rest)
+        }
+    }
+    catch (error) {
+        next(error);
+    }
 }
