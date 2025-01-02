@@ -22,12 +22,12 @@ const userSlice = createSlice({
         },
         signInFailure: (state, action) => {
             state.loading = false,
-            state.error = action.payload
+                state.error = action.payload
         },
         updateUserStart: (state) => {
             state.loading = true
         },
-        updateUserSuccess: (state,action) => {
+        updateUserSuccess: (state, action) => {
             state.currentUser = action.payload;
             state.loading = false;
             state.error = false
@@ -36,11 +36,24 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = action.payload
         },
+        deleteUserStart: (state) => {
+            state.loading = true;
+        },
+        deleteUserSuccess: (state) => {
+            state.currentUser = null;
+            state.loading = false;
+            state.error = false
+        },
+        deleteUserFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload
+        },
+
     }
 })
 
 //exporting functions for action dispatch
-export const { signInStart, signInSuccess, signInFailure,updateUserStart, updateUserFailure, updateUserSuccess } = userSlice.actions
+export const { signInStart, signInSuccess, signInFailure, updateUserStart, updateUserFailure, updateUserSuccess, deleteUserStart, deleteUserSuccess, deleteUserFailure } = userSlice.actions
 
 //export reducer
 export default userSlice.reducer
