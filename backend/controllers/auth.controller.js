@@ -3,6 +3,7 @@ import { errorHandler } from '../utils/error.js'
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+//SIGN-UP
 export const signup = async (req, res, next) => {
 
     const { username, email, password } = req.body;
@@ -17,8 +18,9 @@ export const signup = async (req, res, next) => {
     }
 }
 
-
+//SIGN-IN
 export const signin = async (req, res, next) => {
+
     const { email, password } = req.body;
     try {
         const validUser = await User.findOne({ email });
@@ -38,6 +40,7 @@ export const signin = async (req, res, next) => {
         next(error)
     }
 }
+//GOOGLE SIGNUP AND SIGNIN
 
 export const google = async (req, res, next) => {
     try {
@@ -79,4 +82,9 @@ export const google = async (req, res, next) => {
     catch (error) {
         next(error);
     }
+}
+
+// SIGN-OUT
+export const signout = (req, res) => {
+    res.clearCookie('access_token').status(200).json('Signout success')
 }
